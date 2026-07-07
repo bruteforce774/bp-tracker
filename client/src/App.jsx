@@ -42,6 +42,15 @@ function App() {
     setReadings(prev => prev.filter(r => r.id != id));
   }
 
+  function startEdit(reading) {
+    setForm({
+      systolic: reading.systolic,
+      diastolic: reading.diastolic,
+      timestamp: reading.timestamp
+    });
+    setEditingId(reading.id);
+  }
+
   return (
     <div>
       <h1>Blood Pressure Tracker</h1>
@@ -64,6 +73,7 @@ function App() {
         {readings.map(r => (
           <li key={r.id}>
             {r.systolic}/{r.diastolic} at {r.timestamp}
+            <button onClick={() => startEdit(r)}>Edit</button>
             <button onClick={() => handleDelete(r.id)}>Delete</button>
           </li>
         ))}

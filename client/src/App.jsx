@@ -18,6 +18,14 @@ function App() {
   async function handleSubmit(e) {
     e.preventDefault();
 
+    const systolic = Number(form.systolic);
+    const diastolic = Number(form.diastolic);
+
+    if(!systolic || !diastolic || !form.timestamp) {
+      alert('Please fill in all fields with valid numbers.');
+      return;
+    }
+
     const res = await fetch('http://localhost:3001/readings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -40,15 +48,15 @@ function App() {
       <form onSubmit={handleSubmit}>
         <label>
           Systolic
-          <input type="number" name="systolic" value={form.systolic} onChange={handleChange} />
+          <input type="number" name="systolic" value={form.systolic} onChange={handleChange} required />
         </label>
         <label>
           Diastolic
-          <input type="number" name="diastolic" value={form.diastolic} onChange={handleChange} />
+          <input type="number" name="diastolic" value={form.diastolic} onChange={handleChange} required />
         </label>
         <label>
           Date & time
-          <input type="datetime-local" name="timestamp" value={form.timestamp} onChange={handleChange} />
+          <input type="datetime-local" name="timestamp" value={form.timestamp} onChange={handleChange} required />
         </label>
         <button type="submit">Add reading</button>
       </form>

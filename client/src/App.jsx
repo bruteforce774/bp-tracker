@@ -29,6 +29,11 @@ function App() {
     setForm({ systolic: '', diastolic: '', timestamp: '' });
   }
 
+  async function handleDelete(id) {
+    await fetch(`http://localhost:3001/readings/${id}`, { method: 'DELETE'});
+    setReadings(prev => prev.filter(r => r.id != id));
+  }
+
   return (
     <div>
       <h1>Blood Pressure Tracker</h1>
@@ -51,6 +56,7 @@ function App() {
         {readings.map(r => (
           <li key={r.id}>
             {r.systolic}/{r.diastolic} at {r.timestamp}
+            <button onClick={() => handleDelete(r.id)}>Delete</button>
           </li>
         ))}
       </ul>

@@ -8,9 +8,19 @@ function App() {
     setForm(prev => ({ ...prev, [name]: value }));
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    console.log('Submitting:', form);
+
+    const res = await fetch('http://localhost:3001/readings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form)
+    });
+
+    const saved = await res.json();
+    console.log('Saved:', saved);
+
+    setForm({ systolic: '', diastolic: '', timestamp: '' });
   }
 
   return (

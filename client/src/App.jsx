@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 function App() {
   const [form, setForm] = useState({ systolic: '', diastolic: '', timestamp: '' });
   const [readings, setReadings] = useState([]);
+  const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
     fetch('http://localhost:3001/readings')
@@ -21,25 +22,42 @@ function App() {
     const systolic = Number(form.systolic);
     const diastolic = Number(form.diastolic);
 
-    if(!systolic || !diastolic || !form.timestamp) {
+    if (!systolic || !diastolic || !form.timestamp) {
       alert('Please fill in all fields with valid numbers.');
       return;
     }
 
-    const res = await fetch('http://localhost:3001/readings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form)
-    });
+    const payload = { systolic, diastolic, timestamp: form.timestamp };
 
-    const saved = await res.json();
-    setReadings(prev => [saved, ...prev]);
+    if (editingId) {
+      // update existing reading
+      await fetch(`http://localhost:3001/readings/${editingId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      setReadings(prev =>
+        prev.map(r => (r.id === editingId ? { ...r, ...payload } : r))
+      );
+      setEditingId(null);
+    } else {
+      // create new reading
+      const res = await fetch('http://localhost:3001/readings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const saved = await res.json();
+      setReadings(prev => [saved, ...prev]);
+    }
+
     setForm({ systolic: '', diastolic: '', timestamp: '' });
   }
 
   async function handleDelete(id) {
     await fetch(`http://localhost:3001/readings/${id}`, { method: 'DELETE'});
-    setReadings(prev => prev.filter(r => r.id != id));
+    setReadings(prev => prev.filter(r => r.id !== id));
   }
 
   function startEdit(reading) {
@@ -67,7 +85,15 @@ function App() {
           Date & time
           <input type="datetime-local" name="timestamp" value={form.timestamp} onChange={handleChange} required />
         </label>
-        <button type="submit">Add reading</button>
+        <button type="submit">{editingId ? 'Update reading' : 'Add reading'}</button>
+        {editingId && (
+          <button type="button" onClick={() => {
+            setEditingId(null);
+            setForm({ systolic: '', diastolic: '', timestamp: '' });
+          }}>
+            Cancel
+          </button>
+        )}
       </form>
       <ul>
         {readings.map(r => (

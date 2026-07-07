@@ -1,7 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function App() {
   const [form, setForm] = useState({ systolic: '', diastolic: '', timestamp: '' });
+  const [readings, setReadings] = useState([]);
+
+  useEffect(() => {
+    fetch('http://localhost:3001/readings')
+      .then(res => res.json())
+      .then(setReadings);
+  }, []);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -18,8 +25,7 @@ function App() {
     });
 
     const saved = await res.json();
-    console.log('Saved:', saved);
-
+    setReadings(prev => [saved, ...prev]);
     setForm({ systolic: '', diastolic: '', timestamp: '' });
   }
 
@@ -41,6 +47,13 @@ function App() {
         </label>
         <button type="submit">Add reading</button>
       </form>
+      <ul>
+        {readings.map(r => (
+          <li key={r.id}>
+            {r.systolic}/{r.diastolic} at {r.timestamp}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

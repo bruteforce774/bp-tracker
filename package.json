@@ -1,0 +1,23 @@
+{
+  "name": "bp-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+     "dev": "concurrently \"npm run dev --prefix client\" \"node server/server.js\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bruteforce774/bp-tracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bruteforce774/bp-tracker/issues"
+  },
+  "homepage": "https://github.com/bruteforce774/bp-tracker#readme",
+  "devDependencies": {
+    "concurrently": "^10.0.3"
+  }
+}
